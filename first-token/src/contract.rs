@@ -5,9 +5,7 @@ use cosmwasm_std::{
 };
 use cw20_base::ContractError;
 use cw20_base::enumerable::{query_all_allowances, query_all_accounts};
-use cw20_base::msg::{QueryMsg,ExecuteMsg};
-
-use crate::msg::MigrateMsg;
+use cw20_base::msg::{QueryMsg, ExecuteMsg, InstantiateMsg};
 use cw2::set_contract_version;
 use cw20_base::allowances::{
     execute_decrease_allowance, execute_increase_allowance, execute_send_from,
@@ -18,6 +16,8 @@ use cw20_base::contract::{
     execute_upload_logo, query_balance, query_token_info, query_minter, query_download_logo, query_marketing_info, execute_burn,
 };
 
+use crate::msg::MigrateMsg; // Ensure MigrateMsg is defined in msg.rs or remove this import and related code
+
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:cw20-token";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -27,11 +27,9 @@ pub fn instantiate(
     deps: DepsMut,
     env: Env,
     info: MessageInfo,
-    msg: cw20_base::msg::InstantiateMsg,
+    msg: InstantiateMsg,
 ) -> Result<Response, ContractError> {
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
-
-   
     Ok(cw20_base::contract::instantiate(deps, env, info, msg)?)
 }
 
