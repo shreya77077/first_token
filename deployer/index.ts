@@ -49,7 +49,7 @@ async function deploy() {
     decimal: 6,
     initial_balances: [
       {
-        address: "mantra1celwechlkzqj9vh3x8vcu26fwvtct6ey5l3uvc",
+        address: "mantra1celwechlkzqj9vh3x8vcu26fwvtct6ey5l3uvc ",
         amount: 10000000,
       },
     ],
@@ -67,5 +67,3 @@ async function deploy() {
 }
 
 deploy().catch(console.error);
-
-dfghjkdfghjkdfghj;

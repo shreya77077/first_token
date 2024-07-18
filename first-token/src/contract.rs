@@ -1,11 +1,13 @@
 #[cfg(not(feature = "library"))]
 use cosmwasm_std::entry_point;
 use cosmwasm_std::{
-    to_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult,
+    to_json_binary, Binary, Deps, DepsMut, Env, MessageInfo, Response, StdResult,
 };
 use cw20_base::ContractError;
 use cw20_base::enumerable::{query_all_allowances, query_all_accounts};
-use cw20_base::msg::{QueryMsg, ExecuteMsg, InstantiateMsg};
+use cw20_base::msg::{QueryMsg,ExecuteMsg};
+
+use crate::msg::MigrateMsg;
 use cw2::set_contract_version;
 use cw20_base::allowances::{
     execute_decrease_allowance, execute_increase_allowance, execute_send_from,
@@ -16,8 +18,6 @@ use cw20_base::contract::{
     execute_upload_logo, query_balance, query_token_info, query_minter, query_download_logo, query_marketing_info, execute_burn,
 };
 
-use crate::msg::MigrateMsg; // Ensure MigrateMsg is defined in msg.rs or remove this import and related code
-
 // version info for migration info
 const CONTRACT_NAME: &str = "crates.io:cw20-token";
 const CONTRACT_VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -27,7 +27,7 @@ pub fn instantiate(
     deps: DepsMut,
     env: Env,
     info: MessageInfo,
-    msg: InstantiateMsg,
+    msg: cw20_base::msg::InstantiateMsg,
 ) -> Result<Response, ContractError> {
     set_contract_version(deps.storage, CONTRACT_NAME, CONTRACT_VERSION)?;
     Ok(cw20_base::contract::instantiate(deps, env, info, msg)?)
@@ -85,24 +85,22 @@ pub fn execute(
 #[cfg_attr(not(feature = "library"), entry_point)]
 pub fn query(deps: Deps, _env: Env, msg: QueryMsg) -> StdResult<Binary> {
     match msg {
-        /* Default methods from CW20 Standard with no modifications:
-        <https://github.com/CosmWasm/cw-plus/tree/main/contracts/cw20-base> */
-        QueryMsg::Balance { address } => to_binary(&query_balance(deps, address)?),
-        QueryMsg::TokenInfo {} => to_binary(&query_token_info(deps)?),
-        QueryMsg::Minter {} => to_binary(&query_minter(deps)?),
+        QueryMsg::Balance { address } => to_json_binary(&query_balance(deps, address)?),
+        QueryMsg::TokenInfo {} => to_json_binary(&query_token_info(deps)?),
+        QueryMsg::Minter {} => to_json_binary(&query_minter(deps)?),
         QueryMsg::Allowance { owner, spender } => {
-            to_binary(&query_allowance(deps, owner, spender)?)
+            to_json_binary(&query_allowance(deps, owner, spender)?)
         }
         QueryMsg::AllAllowances {
             owner,
             start_after,
             limit,
-        } => to_binary(&query_all_allowances(deps, owner, start_after, limit)?),
+        } => to_json_binary(&query_all_allowances(deps, owner, start_after, limit)?),
         QueryMsg::AllAccounts { start_after, limit } => {
-            to_binary(&query_all_accounts(deps, start_after, limit)?)
+            to_json_binary(&query_all_accounts(deps, start_after, limit)?)
         }
-        QueryMsg::MarketingInfo {} => to_binary(&query_marketing_info(deps)?),
-        QueryMsg::DownloadLogo {} => to_binary(&query_download_logo(deps)?),
+        QueryMsg::MarketingInfo {} => to_json_binary(&query_marketing_info(deps)?),
+        QueryMsg::DownloadLogo {} => to_json_binary(&query_download_logo(deps)?),
     }
 }
 

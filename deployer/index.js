@@ -39,20 +39,19 @@ var _a = require("@cosmjs/cosmwasm-stargate"), assertIsBroadcastTxSuccess = _a.a
 var _b = require("@cosmjs/stargate"), coins = _b.coins, GasPrice = _b.GasPrice;
 var fs = require("fs");
 require("dotenv").config();
-var mnemonic = process.env.MNEMONIC ||
-    "ride exhibit west toilet buddy chat elder faith attack purity wreck find";
-var rpcEndpoint = process.env.RPC || "https://rpc.hongbai.mantrachain.io";
-var contractWasmPath = "./first-token.wasm";
+// const mnemonic = process.env.MNEMONIC; // Replace with your mnemonic
+var mnemonic = "ride exhibit west toilet buddy chat elder faith attack purity wreck find";
+// const rpcEndpoint = process.env.RPC; // Replace with your RPC endpoint
+var rpcEndpoint = "https://rpc.hongbai.mantrachain.io";
+var contractWasmPath = "./first-token.wasm"; // Path to your compiled contract
 function deploy() {
     return __awaiter(this, void 0, void 0, function () {
-        var wallet, account, client, wasmCode, uploadReceipt, codeId, initMsg, instantiateReceipt, contractAddress, error_1;
+        var wallet, account, client, wasmCode, uploadReceipt, codeId, initMsg, instantiateReceipt, contractAddress;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 6, , 7]);
-                    return [4 /*yield*/, DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
-                            prefix: "mantra",
-                        })];
+                case 0: return [4 /*yield*/, DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
+                        prefix: "mantra", // Replace with the correct prefix for your chain
+                    })];
                 case 1:
                     wallet = _a.sent();
                     return [4 /*yield*/, wallet.getAccounts()];
@@ -63,33 +62,32 @@ function deploy() {
                 case 3:
                     client = _a.sent();
                     console.log("Connected to blockchain");
-                    wasmCode = fs.readFileSync(contractWasmPath);
+                    wasmCode = fs.readFileSync("./first-token.wasm");
                     return [4 /*yield*/, client.upload(account.address, wasmCode, "auto", "Upload CosmWasm contract")];
                 case 4:
                     uploadReceipt = _a.sent();
                     codeId = uploadReceipt.codeId;
                     console.log("Contract uploaded with Code ID: ".concat(codeId));
                     initMsg = {
-                        name: "xyz",
+                        name: "Shreyacw20",
                         symbol: "XYZ",
-                        decimals: 6,
-                        initial_balances: [{ address: account.address, amount: "1000000" }],
-                        mint: { minter: account.address },
-                        marketing: null,
+                        decimal: 6,
+                        initial_balances: [
+                            {
+                                address: "mantra1celwechlkzqj9vh3x8vcu26fwvtct6ey5l3uvc ",
+                                amount: 10000000,
+                            },
+                        ],
                     };
-                    return [4 /*yield*/, client.instantiate(account.address, codeId, initMsg, "My Dinonum Contract", "auto")];
+                    return [4 /*yield*/, client.instantiate(account.address, codeId, initMsg, "My CW20 contract", "auto")];
                 case 5:
                     instantiateReceipt = _a.sent();
                     contractAddress = instantiateReceipt.contractAddress;
+                    console.log("Contract instantiated at reciept: ".concat(instantiateReceipt));
                     console.log("Contract instantiated at address: ".concat(contractAddress));
-                    return [3 /*break*/, 7];
-                case 6:
-                    error_1 = _a.sent();
-                    console.error("Error deploying contract:", error_1);
-                    return [3 /*break*/, 7];
-                case 7: return [2 /*return*/];
+                    return [2 /*return*/];
             }
         });
     });
 }
-deploy();
+deploy().catch(console.error);
